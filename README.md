@@ -1,6 +1,6 @@
 ## Aplikasi perpus Client-Server
 
-* Server menggunakan ExpressJs dan MongoDB
+* Server menggunakan API yang dibangun dengan ExpressJs dan MongoDB
 * Client menggunakan Webix-Jet
 
 ## Lisense
