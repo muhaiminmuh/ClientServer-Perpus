@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <!-- Webix Library -->
+    <script type="text/javascript" src="codebase/webix.js"></script>
+    <link rel="stylesheet" type="text/css" href="codebase/webix.css">
+
+    <!-- App -->
+    <link rel="stylesheet" type="text/css" href="codebase/myapp.css">
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        webix.ui({
+            rows: [
+                {},
+                {
+                    cols: [
+                        {},
+                        {
+                            id: "formLogin",
+                            view: "form",
+                            scroll: false,
+                            width: 300,
+                            elements: [
+                                { view: "text", id: "user", name: "user", label: "Username", required: true, labelWidth: 100 },
+                                { view: "text", id: "pass", name: "pass", type: "password", label: "Password", required: true, labelWidth: 100 },
+                                {
+                                    margin: 5, cols: [
+                                        { view: "button", id: "masuk", label: "Masuk", type: "form" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {}
+                    ]
+                },
+                {}
+            ]
+        });
+
+        //adding ProgressBar functionality to layout
+        webix.extend($$("formLogin"), webix.ProgressBar);
+
+        //event
+        $$("masuk").attachEvent("onItemClick", function (id, e) {
+
+            if ($$('formLogin').validate()) {
+                $$("formLogin").disable();
+                $$("formLogin").showProgress();
+                dataKirim = $$("formLogin").getValues();
+                webix.ajax().post("http://202.67.10.181/login", dataKirim, {
+                    success: function (response, data, xhr) {
+                        $$("formLogin").enable();
+                        $$("formLogin").hideProgress();
+                        hasil = data.json();
+                        console.log(hasil);
+                        if (hasil.status) {
+                            webix.message(hasil.pesan);
+                            webix.storage.session.put('session', { token: hasil.token });
+                            $$("formLogin").disable();
+
+                            window.location = "./";
+
+                        } else {
+                            webix.alert({
+                                title: "Kesalahan",
+                                text: hasil.pesan,
+                                type: "alert-error"
+                            })
+                        }
+
+                    },
+                    error: function (response, data, xhr) {
+                        $$("formLogin").enable();
+                        $$("formLogin").hideProgress();
+                        hasil = data.json();
+                        webix.alert({
+                            title: "Kesalahan",
+                            text: hasil.pesan,
+                            type: "alert-error"
+                        })
+                    }
+                });
+            }
+
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
